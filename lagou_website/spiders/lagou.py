@@ -72,42 +72,46 @@ class LagouSpider(scrapy.Spider):
         item = LagouWebsiteItem()
 
         data = json.loads(response.body.decode('utf-8'))
-        result = data['content']['positionResult']['result']
-        # result = jsonpath.jsonpath(data, '$..result')[0]
-        totalCount = data['content']['positionResult']['totalCount']
-        resultSize = data['content']['positionResult']['resultSize']
-        for each in result:
-            item['city'] = each['city']
-            item['companyFullName'] = each['companyFullName']
-            item['companyLabelList'] = each['companyLabelList']
-            item['companySize'] = each['companySize']
-            item['district'] = each['district']
-            item['education'] = each['education']
-            item['financeStage'] = each['financeStage']
-            item['linestaion'] = each['linestaion']
-            item['positionName'] = each['positionName']
-            item['jobNature'] = each['jobNature']
-            item['salary'] = each['salary']
-            item['industryField'] = each['industryField']
-            item['positionAdvantage'] = each['positionAdvantage']
-            item['positionLables'] = each['positionLables']
-            item['createTime'] = each['createTime']
-            item['workYear'] = each['workYear']
-            item['secondType'] = each['secondType']
-            item['firstType'] = each['firstType']
-            yield item
+        try:
+            result = data['content']['positionResult']['result']
+            # result = jsonpath.jsonpath(data, '$..result')[0]
+            totalCount = data['content']['positionResult']['totalCount']
+            resultSize = data['content']['positionResult']['resultSize']
+            for each in result:
+                item['city'] = each['city']
+                item['companyFullName'] = each['companyFullName']
+                item['companyLabelList'] = each['companyLabelList']
+                item['companySize'] = each['companySize']
+                item['district'] = each['district']
+                item['education'] = each['education']
+                item['financeStage'] = each['financeStage']
+                item['linestaion'] = each['linestaion']
+                item['positionName'] = each['positionName']
+                item['jobNature'] = each['jobNature']
+                item['salary'] = each['salary']
+                item['industryField'] = each['industryField']
+                item['positionAdvantage'] = each['positionAdvantage']
+                item['positionLables'] = each['positionLables']
+                item['createTime'] = each['createTime']
+                item['workYear'] = each['workYear']
+                item['secondType'] = each['secondType']
+                item['firstType'] = each['firstType']
+                yield item
 
-        time.sleep(random.randint(5, 20))
+            time.sleep(random.randint(5, 20))
 
-        if int(resultSize):
-            self.allpage = int(totalCount) / int(resultSize) + 1
-            if self.page < self.allpage:
-                self.page += 1
-                yield FormRequest(self.start_urls, headers=self.headers,
-                                  formdata={
-                                      'first': 'false',
-                                      'pn': str(self.page),
-                                      'kd': 'Python',
-                                      # 'city': '杭州'
-                                  }, callback=self.parse
-                                  )
+            if int(resultSize):
+                self.allpage = int(totalCount) / int(resultSize) + 1
+                if self.page < self.allpage:
+                    self.page += 1
+                    yield FormRequest(self.start_urls, headers=self.headers,
+                                      formdata={
+                                          'first': 'false',
+                                          'pn': str(self.page),
+                                          'kd': 'Python',
+                                          # 'city': '杭州'
+                                      }, callback=self.parse
+                                      )
+        except Exception as e:
+            print("The problem is %s ",e)
+            # print(data['content'])
